@@ -15,4 +15,4 @@ echo Uploading to $username
 
 git add .
 git commit -am "Aktualisierung"
-git push git@github.com:$username/polyglot-problem-solving.git
+git push git@github.com:$username/ployglot-problem-solving.git
