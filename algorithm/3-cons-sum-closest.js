@@ -1,0 +1,1 @@
+// Find 3 consecutive numbers in an array that sums closest to the target
