@@ -1,3 +1,4 @@
+package _algorithm;
 // Perform quick sort on an array of numbers
 // Time complexity: O(n log n)
 // Space complexity: O(n)
