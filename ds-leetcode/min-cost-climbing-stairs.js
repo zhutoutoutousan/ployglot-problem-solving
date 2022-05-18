@@ -3,6 +3,7 @@
  * @return {number}
  */
 // https://leetcode.com/problems/min-cost-climbing-stairs/
+// DIDN'T UNDERSTAND
 var minCostClimbingStairs = function(cost) {
     // Dynamic Programming
     let dp = [0, 0];
