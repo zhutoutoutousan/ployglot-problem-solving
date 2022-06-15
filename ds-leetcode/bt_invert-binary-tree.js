@@ -8,9 +8,13 @@
  */
 /**
  * @param {TreeNode} root
- * @return {number}
+ * @return {TreeNode}
  */
-var maxDepth = function(root) {
-    if(root === null) return 0;
-    return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+var invertTree = function(root) {
+    if(root === null) return null;
+    let left = invertTree(root.left);
+    let right = invertTree(root.right);
+    root.left = right;
+    root.right = left;
+    return root;
 };
