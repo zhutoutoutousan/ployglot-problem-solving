@@ -1,0 +1,1 @@
+// https://codeforces.com/gym/103736/problem/B
