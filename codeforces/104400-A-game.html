@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Triple Brain Training Games</title>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: rgba(0, 0, 0, 0.1);
+            --accent-color: rgba(76, 175, 80, 0.8);
+            --text-color: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .game-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .string-display {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            letter-spacing: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .index-display {
+            font-size: 16px;
+            letter-spacing: 15px;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            background: var(--accent-color);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            flex: 1;
+            min-width: 150px;
+        }
+
+        button:hover {
+            background: rgba(76, 175, 80, 0.9);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .input-area {
+            margin: 20px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        .timer {
+            font-size: 24px;
+            color: #ff6b6b;
+            text-align: center;
+            margin: 15px 0;
+            text-shadow: 0 0 10px rgba(255,0,0,0.3);
+        }
+
+        .result {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .generator-controls {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .generator-controls h3 {
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .generator-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            width: 80px;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+        }
+
+        .phase-indicator {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .instructions h4 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+
+        .instructions .tip {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .game-container {
+                padding: 15px;
+            }
+
+            .string-display {
+                font-size: 20px;
+                letter-spacing: 10px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ABC Triple Brain Training Games</h1>
+
+        <!-- Input Generator -->
+        <div class="game-container">
+            <h2>Input Generator</h2>
+            <div class="instructions">
+                <h4>How to Generate Custom Test Cases</h4>
+                <ol>
+                    <li>Set the desired string length (3-20 characters)</li>
+                    <li>Specify minimum required ABC triples (forward pattern)</li>
+                    <li>Specify minimum required CBA triples (reverse pattern)</li>
+                    <li>Toggle "Force non-overlapping" if you want triples to use different indices</li>
+                    <li>Click "Generate Custom Input" to create a test case</li>
+                </ol>
+                <div class="tip">💡 Generated strings can be used in any of the games below using the "Use Generated Input" button</div>
+            </div>
+            <div class="generator-controls">
+                <h3>Generate Custom Test Cases</h3>
+                <div class="generator-options">
+                    <div class="option-group">
+                        <label>Length:</label>
+                        <input type="number" id="gen-length" value="8" min="3" max="20">
+                    </div>
+                    <div class="option-group">
+                        <label>Min ABC triples:</label>
+                        <input type="number" id="gen-min-abc" value="1" min="0" max="5">
+                    </div>
+                    <div class="option-group">
+                        <label>Min CBA triples:</label>
+                        <input type="number" id="gen-min-cba" value="1" min="0" max="5">
+                    </div>
+                    <div class="option-group">
+                        <label>Force non-overlapping:</label>
+                        <input type="checkbox" id="gen-non-overlap" checked>
+                    </div>
+                </div>
+                <button onclick="generateCustomInput()">Generate Custom Input</button>
+                <div class="result" id="generator-result"></div>
+            </div>
+        </div>
+
+        <!-- Game 1: Quick Triple Finder -->
+        <div class="game-container">
+            <h2>Game 1: Quick Triple Finder</h2>
+            <div class="instructions">
+                <h4>How to Play</h4>
+                <ol>
+                    <li>Click "Start New Game" or "Use Generated Input" to begin</li>
+                    <li>You have 10 seconds to find all possible triples</li>
+                    <li>Look for:
+                        <ul>
+                            <li>ABC patterns (in order)</li>
+                            <li>CBA patterns (in reverse order)</li>
+                        </ul>
+                    </li>
+                    <li>Enter triples using the format: i,j,k;x,y,z
+                        <ul>
+                            <li>Each triple is three indices separated by commas</li>
+                            <li>Multiple triples are separated by semicolons</li>
+                            <li>Example: "0,1,6;2,3,5" for two triples</li>
+                        </ul>
+                    </li>
+                    <li>Submit your answer before time runs out</li>
+                </ol>
+                <div class="tip">💡 Remember: indices must be in ascending order (i < j < k)</div>
+            </div>
+            <div class="string-display" id="g1-string"></div>
+            <div class="index-display" id="g1-indices"></div>
+            <div class="timer" id="g1-timer"></div>
+            <div class="input-area">
+                <input type="text" id="g1-answer" placeholder="Enter triples (e.g., 0,1,6;2,3,5)">
+            </div>
+            <div class="controls">
+                <button onclick="startGame1()">Start New Game</button>
+                <button onclick="startGame1WithCustom()">Use Generated Input</button>
+                <button onclick="checkGame1()">Submit Answer</button>
+            </div>
+            <div class="result" id="g1-result"></div>
+        </div>
+
+        <!-- Game 2: Pattern Recognition Race -->
+        <div class="game-container">
+            <h2>Game 2: Pattern Recognition Race</h2>
+            <div class="instructions">
+                <h4>How to Play</h4>
+                <ol>
+                    <li>Click "Start New Game" or "Use Generated Input" to begin</li>
+                    <li>The game has three 5-second phases:
+                        <ul>
+                            <li>Phase 1: Find all ABC patterns</li>
+                            <li>Phase 2: Find all CBA patterns</li>
+                            <li>Phase 3: Identify non-overlapping triples</li>
+                        </ul>
+                    </li>
+                    <li>Focus on speed and accuracy in each phase</li>
+                    <li>After all phases, you'll see the total possible triples</li>
+                </ol>
+                <div class="tip">💡 Use this game to improve your pattern recognition speed</div>
+            </div>
+            <div class="string-display" id="g2-string"></div>
+            <div class="index-display" id="g2-indices"></div>
+            <div class="timer" id="g2-timer"></div>
+            <div class="phase-indicator" id="g2-phase">Phase: Not started</div>
+            <div class="controls">
+                <button onclick="startGame2()">Start New Game</button>
+                <button onclick="startGame2WithCustom()">Use Generated Input</button>
+            </div>
+            <div class="result" id="g2-result"></div>
+        </div>
+
+        <!-- Game 3: Index Memory Challenge -->
+        <div class="game-container">
+            <h2>Game 3: Index Memory Challenge</h2>
+            <div class="instructions">
+                <h4>How to Play</h4>
+                <ol>
+                    <li>Click "Start New Game" or "Use Generated Input" to begin</li>
+                    <li>Study the string and find:
+                        <ul>
+                            <li>One ABC triple</li>
+                            <li>One CBA triple that doesn't share indices with the ABC triple</li>
+                        </ul>
+                    </li>
+                    <li>Enter your answer in the format: abc_indices;cba_indices
+                        <ul>
+                            <li>First part: indices for ABC pattern</li>
+                            <li>Second part: indices for CBA pattern</li>
+                            <li>Example: "0,1,6;2,3,5"</li>
+                        </ul>
+                    </li>
+                    <li>Click "Check Memory" to verify your answer</li>
+                </ol>
+                <div class="tip">💡 Focus on finding non-overlapping patterns to improve your working memory</div>
+            </div>
+            <div class="string-display" id="g3-string"></div>
+            <div class="index-display" id="g3-indices"></div>
+            <div class="input-area">
+                <input type="text" id="g3-answer" placeholder="Enter ABC indices first, then CBA indices">
+            </div>
+            <div class="controls">
+                <button onclick="startGame3()">Start New Game</button>
+                <button onclick="startGame3WithCustom()">Use Generated Input</button>
+                <button onclick="checkGame3()">Check Memory</button>
+            </div>
+            <div class="result" id="g3-result"></div>
+        </div>
+
+        <!-- Game 4: Prediction Game -->
+        <div class="game-container">
+            <h2>Game 4: Prediction Game</h2>
+            <div class="instructions">
+                <h4>How to Play</h4>
+                <ol>
+                    <li>Click "Start New Game" or "Use Generated Input" to begin</li>
+                    <li>The string starts hidden (shown as underscores)</li>
+                    <li>Click "Reveal Next" to show one character at a time</li>
+                    <li>After each reveal:
+                        <ul>
+                            <li>Predict the maximum possible triples</li>
+                            <li>Enter your prediction (0-10)</li>
+                            <li>Click "Submit Prediction" to check</li>
+                        </ul>
+                    </li>
+                    <li>Try to predict accurately with minimal information</li>
+                </ol>
+                <div class="tip">💡 Think about how each new character affects possible patterns</div>
+            </div>
+            <div class="string-display" id="g4-string"></div>
+            <div class="index-display" id="g4-indices"></div>
+            <div class="input-area">
+                <input type="number" id="g4-prediction" min="0" max="10" placeholder="Your prediction">
+            </div>
+            <div class="controls">
+                <button onclick="startGame4()">Start New Game</button>
+                <button onclick="startGame4WithCustom()">Use Generated Input</button>
+                <button onclick="revealNext()">Reveal Next</button>
+                <button onclick="submitPrediction()">Submit Prediction</button>
+            </div>
+            <div class="result" id="g4-result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        function generateRandomString(length) {
+            const chars = 'ABC';
+            return Array.from({length}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+        }
+
+        function findAllTriples(str) {
+            const result = {abc: [], cba: []};
+            for(let i = 0; i < str.length-2; i++) {
+                for(let j = i+1; j < str.length-1; j++) {
+                    for(let k = j+1; k < str.length; k++) {
+                        if(str[i] === 'A' && str[j] === 'B' && str[k] === 'C') {
+                            result.abc.push([i,j,k]);
+                        }
+                        if(str[i] === 'C' && str[j] === 'B' && str[k] === 'A') {
+                            result.cba.push([i,j,k]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        // Custom Input Generator
+        let lastGeneratedString = '';
+
+        function generateCustomInput() {
+            const length = parseInt(document.getElementById('gen-length').value);
+            const minAbc = parseInt(document.getElementById('gen-min-abc').value);
+            const minCba = parseInt(document.getElementById('gen-min-cba').value);
+            const nonOverlap = document.getElementById('gen-non-overlap').checked;
+
+            let attempts = 0;
+            let maxAttempts = 1000;
+            let validString = '';
+
+            while(attempts < maxAttempts) {
+                const candidate = generateRandomString(length);
+                const triples = findAllTriples(candidate);
+                
+                if(nonOverlap) {
+                    // Check if triples can be non-overlapping
+                    const usedIndices = new Set();
+                    let abcCount = 0;
+                    let cbaCount = 0;
+
+                    for(const triple of triples.abc) {
+                        if(!triple.some(i => usedIndices.has(i))) {
+                            triple.forEach(i => usedIndices.add(i));
+                            abcCount++;
+                        }
+                    }
+
+                    for(const triple of triples.cba) {
+                        if(!triple.some(i => usedIndices.has(i))) {
+                            triple.forEach(i => usedIndices.add(i));
+                            cbaCount++;
+                        }
+                    }
+
+                    if(abcCount >= minAbc && cbaCount >= minCba) {
+                        validString = candidate;
+                        break;
+                    }
+                } else {
+                    if(triples.abc.length >= minAbc && triples.cba.length >= minCba) {
+                        validString = candidate;
+                        break;
+                    }
+                }
+
+                attempts++;
+            }
+
+            if(validString) {
+                lastGeneratedString = validString;
+                const triples = findAllTriples(validString);
+                document.getElementById('generator-result').textContent = 
+                    `Generated: ${validString}\nABC triples: ${triples.abc.length}\nCBA triples: ${triples.cba.length}`;
+            } else {
+                document.getElementById('generator-result').textContent = 
+                    'Could not generate string with given constraints. Try relaxing the requirements.';
+            }
+        }
+
+        // Modified game start functions to use custom input
+        function startGame1WithCustom() {
+            if(lastGeneratedString) {
+                g1String = lastGeneratedString;
+                document.getElementById('g1-string').textContent = g1String;
+                document.getElementById('g1-indices').textContent = Array.from({length: g1String.length}, (_, i) => i).join(' ');
+                g1Triples = findAllTriples(g1String);
+                
+                let timeLeft = 10;
+                document.getElementById('g1-timer').textContent = timeLeft + 's';
+                
+                if(g1Timer) clearInterval(g1Timer);
+                g1Timer = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('g1-timer').textContent = timeLeft + 's';
+                    if(timeLeft <= 0) {
+                        clearInterval(g1Timer);
+                        document.getElementById('g1-answer').disabled = true;
+                    }
+                }, 1000);
+            } else {
+                alert('Please generate a custom input first!');
+            }
+        }
+
+        function startGame2WithCustom() {
+            if(lastGeneratedString) {
+                g2String = lastGeneratedString;
+                document.getElementById('g2-string').textContent = g2String;
+                document.getElementById('g2-indices').textContent = Array.from({length: g2String.length}, (_, i) => i).join(' ');
+                g2Phase = 1;
+                startPhase();
+            } else {
+                alert('Please generate a custom input first!');
+            }
+        }
+
+        function startGame3WithCustom() {
+            if(lastGeneratedString) {
+                g3String = lastGeneratedString;
+                document.getElementById('g3-string').textContent = g3String;
+                document.getElementById('g3-indices').textContent = Array.from({length: g3String.length}, (_, i) => i).join(' ');
+                g3Triples = findAllTriples(g3String);
+            } else {
+                alert('Please generate a custom input first!');
+            }
+        }
+
+        function startGame4WithCustom() {
+            if(lastGeneratedString) {
+                g4FullString = lastGeneratedString;
+                g4Revealed = 0;
+                g4String = '_'.repeat(g4FullString.length);
+                updateGame4Display();
+            } else {
+                alert('Please generate a custom input first!');
+            }
+        }
+
+        // Game 1: Quick Triple Finder
+        let g1String = '';
+        let g1Timer = null;
+        let g1Triples = null;
+
+        function startGame1() {
+            g1String = generateRandomString(8);
+            document.getElementById('g1-string').textContent = g1String;
+            document.getElementById('g1-indices').textContent = '0 1 2 3 4 5 6 7';
+            g1Triples = findAllTriples(g1String);
+            
+            let timeLeft = 10;
+            document.getElementById('g1-timer').textContent = timeLeft + 's';
+            
+            if(g1Timer) clearInterval(g1Timer);
+            g1Timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('g1-timer').textContent = timeLeft + 's';
+                if(timeLeft <= 0) {
+                    clearInterval(g1Timer);
+                    document.getElementById('g1-answer').disabled = true;
+                }
+            }, 1000);
+        }
+
+        function checkGame1() {
+            const answer = document.getElementById('g1-answer').value;
+            const userTriples = answer.split(';').map(t => t.split(',').map(Number));
+            const allCorrectTriples = [...g1Triples.abc, ...g1Triples.cba];
+            
+            let correct = 0;
+            for(const triple of userTriples) {
+                if(allCorrectTriples.some(t => t[0] === triple[0] && t[1] === triple[1] && t[2] === triple[2])) {
+                    correct++;
+                }
+            }
+            
+            document.getElementById('g1-result').textContent = 
+                `You found ${correct} out of ${allCorrectTriples.length} possible triples!`;
+        }
+
+        // Game 2: Pattern Recognition Race
+        let g2String = '';
+        let g2Phase = 0;
+        let g2Timer = null;
+
+        function startGame2() {
+            g2String = generateRandomString(8);
+            document.getElementById('g2-string').textContent = g2String;
+            document.getElementById('g2-indices').textContent = '0 1 2 3 4 5 6 7';
+            g2Phase = 1;
+            startPhase();
+        }
+
+        function startPhase() {
+            let timeLeft = 5;
+            document.getElementById('g2-phase').textContent = `Phase ${g2Phase}: ${
+                g2Phase === 1 ? 'Find ABC' : g2Phase === 2 ? 'Find CBA' : 'Eliminate overlaps'
+            }`;
+            
+            if(g2Timer) clearInterval(g2Timer);
+            g2Timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('g2-timer').textContent = timeLeft + 's';
+                if(timeLeft <= 0) {
+                    clearInterval(g2Timer);
+                    if(g2Phase < 3) {
+                        g2Phase++;
+                        startPhase();
+                    } else {
+                        showGame2Results();
+                    }
+                }
+            }, 1000);
+        }
+
+        function showGame2Results() {
+            const triples = findAllTriples(g2String);
+            document.getElementById('g2-result').textContent = 
+                `Total ABC triples: ${triples.abc.length}\nTotal CBA triples: ${triples.cba.length}`;
+        }
+
+        // Game 3: Index Memory Challenge
+        let g3String = '';
+        let g3Triples = null;
+
+        function startGame3() {
+            g3String = generateRandomString(8);
+            document.getElementById('g3-string').textContent = g3String;
+            document.getElementById('g3-indices').textContent = '0 1 2 3 4 5 6 7';
+            g3Triples = findAllTriples(g3String);
+        }
+
+        function checkGame3() {
+            const answer = document.getElementById('g3-answer').value;
+            const [abcTriple, cbaTriple] = answer.split(';').map(t => t.split(',').map(Number));
+            
+            let correct = true;
+            if(g3Triples.abc.length && !g3Triples.abc.some(t => 
+                t[0] === abcTriple[0] && t[1] === abcTriple[1] && t[2] === abcTriple[2])) {
+                correct = false;
+            }
+            if(g3Triples.cba.length && !g3Triples.cba.some(t => 
+                t[0] === cbaTriple[0] && t[1] === cbaTriple[1] && t[2] === cbaTriple[2])) {
+                correct = false;
+            }
+            
+            document.getElementById('g3-result').textContent = 
+                correct ? 'Correct! Your memory is excellent!' : 'Try again!';
+        }
+
+        // Game 4: Prediction Game
+        let g4String = '';
+        let g4Revealed = 0;
+        let g4FullString = '';
+
+        function startGame4() {
+            g4FullString = generateRandomString(8);
+            g4Revealed = 0;
+            g4String = '_'.repeat(8);
+            updateGame4Display();
+        }
+
+        function revealNext() {
+            if(g4Revealed < g4FullString.length) {
+                g4Revealed++;
+                g4String = g4FullString.slice(0, g4Revealed) + '_'.repeat(g4FullString.length - g4Revealed);
+                updateGame4Display();
+            }
+        }
+
+        function updateGame4Display() {
+            document.getElementById('g4-string').textContent = g4String;
+            document.getElementById('g4-indices').textContent = '0 1 2 3 4 5 6 7';
+        }
+
+        function submitPrediction() {
+            const prediction = parseInt(document.getElementById('g4-prediction').value);
+            const triples = findAllTriples(g4FullString);
+            const actual = Math.max(triples.abc.length, triples.cba.length);
+            
+            document.getElementById('g4-result').textContent = 
+                `Your prediction: ${prediction}\nActual maximum: ${actual}`;
+        }
+    </script>
+</body>
+</html>
