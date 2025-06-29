@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arithmetica's Speed Challenge</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: rgba(255, 255, 255, 0.9);
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent-success: #4ade80;
+            --accent-error: #ef4444;
+            --beginner-color: #4ade80;
+            --intermediate-color: #2563eb;
+            --master-color: #8b5cf6;
+            --grandmaster-color: #ff0080;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .difficulty-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn.active[data-level="beginner"] { color: var(--beginner-color); box-shadow: 0 0 20px rgba(74, 222, 128, 0.2); }
+        .difficulty-btn.active[data-level="intermediate"] { color: var(--intermediate-color); box-shadow: 0 0 20px rgba(37, 99, 235, 0.2); }
+        .difficulty-btn.active[data-level="master"] { color: var(--master-color); box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
+        .difficulty-btn.active[data-level="grandmaster"] { color: var(--grandmaster-color); box-shadow: 0 0 20px rgba(255, 0, 128, 0.2); }
+
+        .game-area {
+            position: relative;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .number-display {
+            font-size: 48px;
+            font-family: 'Roboto Mono', monospace;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .number-current {
+            font-size: 64px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .number-info {
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn.multiple { border: 2px solid var(--accent-success); }
+        .action-btn.not-multiple { border: 2px solid var(--accent-error); }
+
+        .stats {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 18px;
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .streak-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .feedback {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .feedback.show {
+            opacity: 1;
+        }
+
+        .feedback.correct {
+            color: var(--accent-success);
+        }
+
+        .feedback.wrong {
+            color: var(--accent-error);
+        }
+
+        .key-hint {
+            position: absolute;
+            bottom: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.2s ease-in-out;
+        }
+
+        .flash {
+            animation: flash 0.3s ease-in-out;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Arithmetica's Speed Challenge</h1>
+            <p>Press Z for Multiple, M for Not Multiple, or use the buttons</p>
+        </div>
+
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" data-level="beginner">Beginner</button>
+            <button class="difficulty-btn" data-level="intermediate">Intermediate</button>
+            <button class="difficulty-btn" data-level="master">Master</button>
+            <button class="difficulty-btn" data-level="grandmaster">Grandmaster</button>
+        </div>
+
+        <div class="game-area">
+            <div class="timer">30s</div>
+            
+            <div class="stats">
+                <div>Score: <span id="score">0</span></div>
+                <div>Streak: <span id="streak">0</span></div>
+                <div>Level: <span id="level">1</span></div>
+            </div>
+
+            <div class="number-display">
+                <div class="number-info">Is this number a multiple of <span id="divisor">K</span>?</div>
+                <div class="number-current" id="currentNumber">0</div>
+            </div>
+
+            <div class="button-container">
+                <button class="action-btn multiple" onclick="game.checkAnswer(true)">Multiple (Z)</button>
+                <button class="action-btn not-multiple" onclick="game.checkAnswer(false)">Not Multiple (M)</button>
+            </div>
+
+            <div class="streak-indicator">Streak: 0</div>
+            <div class="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        class SpeedGame {
+            constructor() {
+                this.score = 0;
+                this.streak = 0;
+                this.level = 1;
+                this.timeLeft = 30;
+                this.difficulty = 'beginner';
+                this.currentNumber = 0;
+                this.currentDivisor = 0;
+                this.isMultiple = false;
+                this.timer = null;
+
+                this.initializeElements();
+                this.initializeEventListeners();
+                this.startNewLevel();
+            }
+
+            initializeElements() {
+                this.scoreElement = document.getElementById('score');
+                this.streakElement = document.getElementById('streak');
+                this.levelElement = document.getElementById('level');
+                this.timerElement = document.querySelector('.timer');
+                this.currentNumberElement = document.getElementById('currentNumber');
+                this.divisorElement = document.getElementById('divisor');
+                this.feedbackElement = document.querySelector('.feedback');
+                this.streakIndicatorElement = document.querySelector('.streak-indicator');
+                this.difficultyBtns = document.querySelectorAll('.difficulty-btn');
+            }
+
+            initializeEventListeners() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key.toLowerCase() === 'z') {
+                        this.checkAnswer(true);
+                    } else if (e.key.toLowerCase() === 'm') {
+                        this.checkAnswer(false);
+                    }
+                });
+
+                this.difficultyBtns.forEach(btn => {
+                    btn.addEventListener('click', () => this.setDifficulty(btn.dataset.level));
+                });
+            }
+
+            setDifficulty(level) {
+                this.difficulty = level;
+                this.difficultyBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.level === level);
+                });
+                this.startNewLevel();
+            }
+
+            getDifficultySettings() {
+                const settings = {
+                    beginner: {
+                        maxNumber: 100,
+                        maxDivisor: 12,
+                        timeLimit: 30,
+                        negativeAllowed: false
+                    },
+                    intermediate: {
+                        maxNumber: 1000,
+                        maxDivisor: 20,
+                        timeLimit: 25,
+                        negativeAllowed: true
+                    },
+                    master: {
+                        maxNumber: 1000000,
+                        maxDivisor: 100,
+                        timeLimit: 20,
+                        negativeAllowed: true
+                    },
+                    grandmaster: {
+                        maxNumber: Number.MAX_SAFE_INTEGER,
+                        maxDivisor: 10000,
+                        timeLimit: 15,
+                        negativeAllowed: true
+                    }
+                };
+                return settings[this.difficulty];
+            }
+
+            generateNumber() {
+                const settings = this.getDifficultySettings();
+                
+                // Generate divisor first
+                this.currentDivisor = Math.floor(Math.random() * (settings.maxDivisor - 2)) + 2;
+                
+                // Decide if we want a multiple or not (50% chance)
+                this.isMultiple = Math.random() < 0.5;
+                
+                if (this.isMultiple) {
+                    // Generate a multiple
+                    const multiplier = Math.floor(Math.random() * (settings.maxNumber / this.currentDivisor));
+                    this.currentNumber = this.currentDivisor * multiplier;
+                } else {
+                    // Generate a non-multiple
+                    do {
+                        this.currentNumber = Math.floor(Math.random() * settings.maxNumber);
+                    } while (this.currentNumber % this.currentDivisor === 0);
+                }
+
+                // Add negative numbers for higher difficulties
+                if (settings.negativeAllowed && Math.random() < 0.3) {
+                    this.currentNumber *= -1;
+                }
+
+                // Format number for display
+                this.currentNumberElement.textContent = this.currentNumber.toLocaleString();
+                this.divisorElement.textContent = this.currentDivisor;
+            }
+
+            checkAnswer(userAnswer) {
+                const isCorrect = (userAnswer === this.isMultiple);
+                
+                if (isCorrect) {
+                    this.handleCorrectAnswer();
+                } else {
+                    this.handleWrongAnswer();
+                }
+
+                this.generateNumber();
+            }
+
+            handleCorrectAnswer() {
+                this.streak++;
+                const streakBonus = Math.floor(this.streak * 1.5);
+                const difficultyMultiplier = {
+                    beginner: 1,
+                    intermediate: 2,
+                    master: 5,
+                    grandmaster: 10
+                }[this.difficulty];
+
+                this.score += (100 + streakBonus) * difficultyMultiplier;
+                
+                this.showFeedback('Correct! +' + ((100 + streakBonus) * difficultyMultiplier), true);
+                this.updateDisplay();
+
+                if (this.streak > 0 && this.streak % 10 === 0) {
+                    this.level++;
+                    this.levelElement.textContent = this.level;
+                }
+            }
+
+            handleWrongAnswer() {
+                this.streak = 0;
+                this.showFeedback('Wrong!', false);
+                this.updateDisplay();
+            }
+
+            showFeedback(text, isCorrect) {
+                this.feedbackElement.textContent = text;
+                this.feedbackElement.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+                this.currentNumberElement.classList.add('flash');
+                
+                setTimeout(() => {
+                    this.feedbackElement.classList.remove('show');
+                    this.currentNumberElement.classList.remove('flash');
+                }, 500);
+            }
+
+            updateDisplay() {
+                this.scoreElement.textContent = this.score;
+                this.streakElement.textContent = this.streak;
+                this.streakIndicatorElement.textContent = `Streak: ${this.streak}`;
+            }
+
+            updateTimer() {
+                this.timeLeft--;
+                this.timerElement.textContent = this.timeLeft + 's';
+                
+                if (this.timeLeft <= 0) {
+                    clearInterval(this.timer);
+                    this.startNewLevel();
+                }
+            }
+
+            startNewLevel() {
+                const settings = this.getDifficultySettings();
+                this.timeLeft = settings.timeLimit;
+                clearInterval(this.timer);
+                this.timer = setInterval(() => this.updateTimer(), 1000);
+                this.generateNumber();
+            }
+        }
+
+        const game = new SpeedGame();
+    </script>
+</body>
+</html> 
